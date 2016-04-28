@@ -1,0 +1,41 @@
+<form>
+
+    <select class="form-control" title="Locales" ng-model="selection.locale" ng-change="reloadValues()">
+        <option>-- Select Locale --</option>
+        <option value="top">Top Locales</option>
+        <optgroup label="Locales">
+            <option value="[[locale]]" ng-repeat="locale in locales">[[locale]]</option>
+        </optgroup>
+    </select>
+
+    <label ng-repeat="property in properties">
+        <input class="toggle toggle-xl" type="checkbox" ng-model="selection.options[property]" value="[[property]]" />
+        <span>[[property]]</span>
+    </label>
+
+</form>
+
+<section ng-if="display">
+
+    <div ng-repeat="ea in display">
+        <div ng-repeat="locale in ea.main">
+
+            <h3 class="lead text-primary">
+                [[locale.identity.language]]
+                <span ng-if="locale.identity.territory">
+                    -
+                </span>
+                [[locale.identity.territory]]
+            </h3>
+            <ul>
+                <li ng-if="selection.options[key]" ng-repeat="(key,value) in locale.delimiters">
+                    <strong class="bg-primary">[[value]]</strong>
+                    <span class="text-muted">[[key]]</span>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+</section>
+
