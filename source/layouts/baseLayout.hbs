@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html{{#with ngApp}} ng-app="{{.}}"{{/with}}>
+    <head>
+
+        {{! Make sure to override the title }}
+        <title>{{title}}</title>
+
+        {{#with description}}<meta content="{{.}}" http-equiv="description" />{{/with}}
+        {{#with base}}<base href="{{.}}" />{{/with}}
+
+        {{! append the list of ccsFiles }}
+        {{#each cssFiles}}
+            <link rel="stylesheet" type="text/css" href="{{.}}"/>
+        {{/each}}
+
+        {{! some static sites might want to load some crazy or inline styles }}
+        {{{block "stylesheets"}}}
+
+    </head>
+    <body>
+
+        {{! The body template }}
+        {{{body}}}
+
+        {{! load the list of JS files }}
+        {{#each jsFiles}}
+            <script type="application/x-javascript" src="{{.}}"></script>
+        {{/each}}
+
+        {{! if the view has some scripts, just append the block }}
+        {{{block "scripts"}}}
+
+    </body>
+</html>
