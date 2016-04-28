@@ -1,0 +1,258 @@
+#!/usr/bin/env node
+
+/**
+ * Contains the configuration and initialization to run a
+ * localhost instance of the application
+ *
+ * @file
+ * @since 4/28/16
+ * @version 1
+ * @author Moises Romero
+ * @copyright Moises Romero
+ */
+
+/**
+ * Load dependencies
+ */
+var path = require('path'),
+    fs = require('fs'),
+    express = require('express'),
+    hbs = require('express-hbs'),
+    extend = require('extend'),
+    httpReqeust = require('http-request'),
+    compass = require('node-compass'),
+    
+    /**
+     * URL where we'll be obtaining the locales
+     * @type {string}
+     */
+    localeUrlReg = 'https://raw.githubusercontent.com/unicode-cldr/cldr-misc-full/master/main/{locale}/delimiters.json',
+
+    /**
+     * The the port number
+     * @type {number}
+     */
+    port = process.env.PORT || process.env.port || 3000,
+    
+    /**
+     * Create an instance of express
+     */
+    server = express(),
+
+    /**
+     * Top Locales
+     * 
+     * We select a list of top locales because there's a huge list of locales to fetch
+     * which might compromise the performance. 
+     * @todo Need to find a better way to cache the locales
+     * 
+     * @type {string[]}
+     */
+    topLocales = ["en", "fr", "ko", "de"],
+
+    /**
+     * Builda cache object
+     * @type {Object}
+     */
+    localeCache = {};
+
+
+/**
+ * Custom 404 handler
+ * 
+ * @param req
+ * @param res
+ * @param next
+ */
+function error404Handler(req, res, next){
+    // TODO: Implement a custom error handler
+    res.status(404).end('The request was not found');
+}
+
+/**
+ * Simple URL parser
+ * @param locale
+ * @returns {string}
+ */
+function getLocaleUrl(locale){
+    return localeUrlReg.replace('{locale}',locale);
+}
+
+
+/**
+ * Obtain all locales
+ * @param req
+ * @param res
+ * @param next
+ */
+function allLocalesProxyApplication(req, res, next){
+
+    var localesToFetch = [].concat(topLocales),
+        locales = {},
+        locale;
+
+    function fetchNextLocale(){
+
+        locale = localesToFetch.shift();
+        
+        if(localeCache[locale]){
+            
+            locales[locale] = extend({}, localeCache[locale]);
+            if(localesToFetch.length === 0)
+                return res.json(locales);
+            fetchNextLocale();
+
+        }else{
+
+            httpReqeust.get(getLocaleUrl(locale), function(err, response){
+
+                if(err)
+                    res.status(500);
+
+                if(response){
+                    localeCache[locale] = JSON.parse(response.buffer.toString());
+                    locales[locale] = extend({}, localeCache[locale]);
+                }
+
+                if(localesToFetch.length === 0)
+                    return res.json(locales);
+                fetchNextLocale();
+
+            });
+            
+        }
+    }
+
+    fetchNextLocale();
+}
+
+
+/**
+ * API application
+ * 
+ * @param req
+ * @param res
+ * @param next
+ */
+function localeProxyApplication(req, res, next){
+    httpReqeust.get(getLocaleUrl(req.params.locale), function(err, response){
+        if(err)
+            console.error(err);
+        var result = {};
+        result[req.params.locale] = JSON.parse(response.buffer.toString());
+        res.json(result);
+    });
+}
+
+/**
+ * The main application
+ * @param req
+ * @param res
+ * @param next
+ * @returns {function}
+ */
+function getMainApplicationHandler(){
+
+    var viewsDir = path.normalize(__dirname + '/source/views'),
+        layoutsDir = path.normalize(__dirname + '/source/layouts'),
+
+        hbsUrlExtension = /\.(tpl|html|htm|hbs).*/i,
+        hbsFileRequestReg = /^(\/((default|index)\.(tpl|html|htm|hbs))?)?(\?.*)?$/;
+
+    return express()
+
+        // create the hbs instance
+        .engine('hbs', hbs.express4({
+            partialsDir: viewsDir,
+            layoutsDir: layoutsDir,
+            beautify: true
+        }))
+
+        // enable the root of the project as the view path
+        .set('views', viewsDir)
+
+        // set the view engine to be handlebars
+        .set('view engine', 'hbs')
+
+        // disable caching in development so we can manipulate the views on the fly
+        // TODO: write some logic to cache templates in production
+        .set('view cache', false)
+
+        // bind the main handler
+        .use(function(req, res, next){
+
+            if(!hbsFileRequestReg.test(req.url))
+                return next();
+
+            var view = req.url.replace(hbsUrlExtension, '').replace(/^\//,''),
+                model;
+
+            if(view === '')
+                view = 'index';
+            
+            try{
+                var modelName = view.substr(0,1).toUpperCase() + view.substr(1) + 'Model',
+                    Model = require(path.normalize(__dirname + '/source/views/' + modelName + '.js'));
+                model = new Model(req, res);
+            }catch(e){
+                model = {};
+            }
+
+            res.render(view, model);
+        });
+
+}
+
+
+/**
+ * Register the server mapping handlers
+ */
+server
+
+    // ************************************************
+    // TODO: only use this if you have compass installed
+    // use compass for compiling on-the-fly
+    .use('/assets/css', compass({
+        // TODO: enable compression in prod
+        mode: 'expanded',
+        comments: true,
+        relative: true,
+        css: 'css',
+        sass: 'scss',
+        project: path.normalize(__dirname + '/source/assets'),
+        // TODO: enable cache in prod
+        cache: false,
+        logging: true
+    }))
+    // ************************************************
+
+    // static resources
+    .use('/assets', express.static(__dirname + '/source/assets'))
+
+    // send the list of locales
+    .use('/locales', function(req, res, next){
+        res.sendFile(path.normalize(__dirname + '/locales.json'));
+    })
+
+    // register the main application
+    .use('/locale/top', allLocalesProxyApplication)
+
+    // register the main application
+    .use('/locale/:locale', localeProxyApplication)
+    
+    // use a handlebars parser
+    .use(getMainApplicationHandler())
+        
+    // static resources
+    .use(error404Handler);
+
+/**
+ * Listen to the port
+ */
+server.listen(port);
+console.log('Server now listening on port ' + port);
+
+/** 
+ * export the server 
+ */
+module.exports = server;
