@@ -1,0 +1,37 @@
+# Sass Cache Files #
+.sass-cache
+
+# Node Modules
+node_modules
+
+# Auto-Generated Files
+source/**/*.css
+!source/libs/**/*.css
+
+# Project Files
+.idea
+workspace.xml
+*.iml
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+.jar
+*.rar
+*.tar
+*.zip
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.com.*
+.Trashes
+.bin
+ehthumbs.db
+Thumbs.db
