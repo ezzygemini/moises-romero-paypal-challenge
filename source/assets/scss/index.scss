@@ -1,0 +1,64 @@
+@import "compass";
+
+html,
+body{
+    height: 100%;
+}
+
+
+body{
+    background-image: image-url('bg.png');
+    background-repeat: no-repeat;
+    background-position: center 150%;
+    @include background-size(contain);
+}
+
+
+header{
+    background: image-url('paypal-logo-129x32.svg') center no-repeat;
+    height: 7rem;
+}
+
+
+form{
+    max-width: 30rem;
+    margin: 2rem auto;
+
+    label{
+        display: block;
+    }
+
+    select{
+        margin-bottom: 2rem;
+    }
+}
+
+
+section{
+    text-align: center;
+
+    > div{
+        display: inline-block;
+        text-align: left;
+        padding: 1rem 2rem;
+        margin: 0 1rem;
+        background-color: rgba(255,255,255,0.8);
+        border: 0.2rem solid rgba(0,0,0,0.1);
+
+        strong,
+        span{ vertical-align: center; }
+
+        strong{
+            width: 2rem;
+            text-align: center;
+            display: inline-block;
+            @include border-radius(0.5rem);
+        }
+    }
+
+    ul{
+        list-style: none;
+        padding: 0;
+    }
+
+}
