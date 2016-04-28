@@ -5,7 +5,9 @@
 node_modules
 
 # Auto-Generated Files
-source/**/*.css
+# these are generated files with sass
+# source/**/css/
+# source/**/*.css
 !source/libs/**/*.css
 
 # Project Files
