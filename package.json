@@ -2,6 +2,15 @@
   "name": "application-name",
   "version": "0.0.1",
   "dependencies": {
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "express-hbs": "^1.0.0",
+    "extend": "^3.0.0",
+    "http-request": "^0.7.0",
+    "node-compass": "^0.2.4",
+    "path": "^0.12.7"
+  },
+  "scripts": {
+    "preinstall": "npm install",
+    "start": "node ./localhost"
   }
 }
