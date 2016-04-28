@@ -20,7 +20,7 @@ var path = require('path'),
     hbs = require('express-hbs'),
     extend = require('extend'),
     httpReqeust = require('http-request'),
-    compass = require('node-compass'),
+    compass,
     
     /**
      * URL where we'll be obtaining the locales
@@ -54,8 +54,25 @@ var path = require('path'),
      * Builda cache object
      * @type {Object}
      */
-    localeCache = {};
+    localeCache = {},
 
+    /**
+     * Variable to see if we disable compass 
+     * @type {boolean}
+     */
+    compassEnabled = true;
+
+
+/**
+ * Check if we need compass
+ */
+process.argv.forEach(function(arg){
+    if(arg === 'no-compass'){
+        compassEnabled = false;
+    }
+});
+if(compassEnabled)
+    compass = require('node-compass');
 
 /**
  * Custom 404 handler
@@ -204,27 +221,34 @@ function getMainApplicationHandler(){
 }
 
 
+if(compassEnabled)
+    server
+        // use compass for compiling on-the-fly
+        .use('/assets/css', compass({
+            // TODO: enable compression in prod
+            mode: 'expanded',
+            comments: true,
+            relative: true,
+            css: 'css',
+            sass: 'scss',
+            project: path.normalize(__dirname + '/source/assets'),
+            // TODO: enable cache in prod
+            cache: false,
+            logging: true
+        }));
+else
+    console.warn(
+        '-------------\n' + 
+        'WARNING: \n' + 
+        'Compass has been disabled, no changes to SASS files will be reflected.\n' +
+        '-------------\n'
+    );
+
+
 /**
  * Register the server mapping handlers
  */
 server
-
-    // ************************************************
-    // TODO: only use this if you have compass installed
-    // use compass for compiling on-the-fly
-    .use('/assets/css', compass({
-        // TODO: enable compression in prod
-        mode: 'expanded',
-        comments: true,
-        relative: true,
-        css: 'css',
-        sass: 'scss',
-        project: path.normalize(__dirname + '/source/assets'),
-        // TODO: enable cache in prod
-        cache: false,
-        logging: true
-    }))
-    // ************************************************
 
     // static resources
     .use('/assets', express.static(__dirname + '/source/assets'))
