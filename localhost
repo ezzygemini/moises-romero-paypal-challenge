@@ -76,10 +76,10 @@ if(compassEnabled)
 
 /**
  * Custom 404 handler
- * 
- * @param req
- * @param res
- * @param next
+ *
+ * @param   {IncomingMessage}   req   Request object
+ * @param   {ServerResponse}    res   Response object
+ * @param   {function}          next
  */
 function error404Handler(req, res, next){
     // TODO: Implement a custom error handler
@@ -97,10 +97,11 @@ function getLocaleUrl(locale){
 
 
 /**
- * Obtain all locales
- * @param req
- * @param res
- * @param next
+ * Application to obtain all locales
+ * 
+ * @param   {IncomingMessage}   req   Request object
+ * @param   {ServerResponse}    res   Response object
+ * @param   {function}          next
  */
 function allLocalesProxyApplication(req, res, next){
 
@@ -146,10 +147,10 @@ function allLocalesProxyApplication(req, res, next){
 
 /**
  * API application
- * 
- * @param req
- * @param res
- * @param next
+ *
+ * @param   {IncomingMessage}   req   Request object
+ * @param   {ServerResponse}    res   Response object
+ * @param   {function}          next
  */
 function localeProxyApplication(req, res, next){
     httpReqeust.get(getLocaleUrl(req.params.locale), function(err, response){
@@ -163,9 +164,10 @@ function localeProxyApplication(req, res, next){
 
 /**
  * The main application
- * @param req
- * @param res
- * @param next
+ * 
+ * @param   {IncomingMessage}   req   Request object
+ * @param   {ServerResponse}    res   Response object
+ * @param   {function}          next
  * @returns {function}
  */
 function getMainApplicationHandler(){
@@ -221,28 +223,34 @@ function getMainApplicationHandler(){
 }
 
 
-if(compassEnabled)
-    server
-        // use compass for compiling on-the-fly
-        .use('/assets/css', compass({
-            // TODO: enable compression in prod
-            mode: 'expanded',
-            comments: true,
-            relative: true,
-            css: 'css',
-            sass: 'scss',
-            project: path.normalize(__dirname + '/source/assets'),
-            // TODO: enable cache in prod
-            cache: false,
-            logging: true
-        }));
-else
+/**
+ * Enable compass compiler
+ */
+if(compassEnabled){
+
+    server.use('/assets/css', compass({
+        // TODO: enable compression in prod
+        mode: 'expanded',
+        comments: true,
+        relative: true,
+        css: 'css',
+        sass: 'scss',
+        project: path.normalize(__dirname + '/source/assets'),
+        // TODO: enable cache in prod
+        cache: false,
+        logging: true
+    }));
+
+}else{
+
     console.warn(
-        '-------------\n' + 
-        'WARNING: \n' + 
+        '-------------\n' +
+        'WARNING: \n' +
         'Compass has been disabled, no changes to SASS files will be reflected.\n' +
         '-------------\n'
     );
+
+}
 
 
 /**
@@ -258,10 +266,10 @@ server
         res.sendFile(path.normalize(__dirname + '/locales.json'));
     })
 
-    // register the main application
+    // register a light proxy app to retrieve top locales
     .use('/locale/top', allLocalesProxyApplication)
 
-    // register the main application
+    // register the proxy application
     .use('/locale/:locale', localeProxyApplication)
     
     // use a handlebars parser

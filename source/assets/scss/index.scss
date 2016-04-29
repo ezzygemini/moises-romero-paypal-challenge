@@ -1,11 +1,13 @@
+// include compass support
 @import "compass";
 
+// make sure we cover the entire height of the canvas
 html,
 body{
     height: 100%;
 }
 
-
+// apply a background image
 body{
     background-image: image-url('bg.png');
     background-repeat: no-repeat;
@@ -13,13 +15,13 @@ body{
     @include background-size(contain);
 }
 
-
+// give the header a logo background
 header{
     background: image-url('paypal-logo-129x32.svg') center no-repeat;
     height: 7rem;
 }
 
-
+// center the form
 form{
     max-width: 30rem;
     margin: 2rem auto;
@@ -33,7 +35,7 @@ form{
     }
 }
 
-
+// give some basic styles to the panels displayed
 section{
     text-align: center;
 

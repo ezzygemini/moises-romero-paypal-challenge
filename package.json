@@ -1,6 +1,22 @@
 {
-  "name": "application-name",
+  "name": "PayPal Coding Challenge",
   "version": "0.0.1",
+  "description": "A coding challenge from PayPal",
+  "author": "Moises Romero",
+  "private": false,
+  "contributors": [
+    {
+      "name": "Moises Romero",
+      "email": "ezzygemini@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ezzygemini/moises-romero-paypal-challenge"
+  },
+  "bugs": {
+    "url": "https://github.com/ezzygemini/moises-romero-paypal-challenge/issues"
+  },
   "dependencies": {
     "express": "^4.13.4",
     "express-hbs": "^1.0.0",

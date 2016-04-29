@@ -1,3 +1,13 @@
+/**
+ * Contains the angular module to fetch
+ * different locale properties
+ *
+ * @file
+ * @since 4/28/16
+ * @version 1
+ * @author Moises Romero
+ * @copyright Moises Romero
+ */
 (function(angular){
 
 
@@ -6,6 +16,7 @@
      */
     angular.module('paypalCodeChallenge', [])
 
+        
         /**
          * Configure the application
          */
@@ -17,6 +28,7 @@
             $interpolateProvider.startSymbol('[[').endSymbol(']]');
         }])
 
+        
         /**
          * Build the main directive
          */
@@ -24,10 +36,14 @@
             return {
                 templateUrl: 'assets/templates/localePropertyLookup.hbs',
                 controller: ['$scope', '$http', function($scope, $http){
-
+                    
+                    // available properties
                     $scope.properties = ['quotationStart','quotationEnd','alternateQuotationStart','alternateQuotationEnd'];
+                    
+                    // list of locales (populated via api)
                     $scope.locales = [];
 
+                    // initial selection values
                     $scope.selection = {
                         locale: 'top',
                         properties: 'quotationStart',
@@ -39,8 +55,10 @@
                         }
                     };
 
+                    // hide the display values initially
                     $scope.display = null;
                         
+                    // reload the values
                     $scope.reloadValues = function(){
                         $http({ method:'GET', url:'/locale/' + $scope.selection.locale }).then(function(response){
                             $scope.display = response.data;
@@ -49,14 +67,15 @@
                         });
                     };
 
+                    // make an http request to load the locales
                     $http({ method:'GET', url:'/locales' }).then(function(response){
                         $scope.locales = response.data;
                     }, function(){
                         console.error('We had an error obtaining the list of locales');
                     });
 
+                    // display the default values
                     $scope.reloadValues();
-
                 }]
             }
         });

@@ -1,4 +1,10 @@
 @import
+
+    // include compass support
     "compass",
+
+    // bootstrap library
     "../../../libs/bootstrap-sass-3.3.6/assets/stylesheets/_bootstrap.scss",
+
+    // custom toggle checkbox
     "./toggle";
