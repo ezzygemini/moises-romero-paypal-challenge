@@ -1,10 +1,10 @@
-/* line 3, ../scss/index.scss */
+/* line 5, ../scss/index.scss */
 html,
 body {
   height: 100%;
 }
 
-/* line 9, ../scss/index.scss */
+/* line 11, ../scss/index.scss */
 body {
   background-image: url('../images/bg.png?1461876170');
   background-repeat: no-repeat;
@@ -15,31 +15,31 @@ body {
   background-size: contain;
 }
 
-/* line 17, ../scss/index.scss */
+/* line 19, ../scss/index.scss */
 header {
   background: url('../images/paypal-logo-129x32.svg?1461877271') center no-repeat;
   height: 7rem;
 }
 
-/* line 23, ../scss/index.scss */
+/* line 25, ../scss/index.scss */
 form {
   max-width: 30rem;
   margin: 2rem auto;
 }
-/* line 27, ../scss/index.scss */
+/* line 29, ../scss/index.scss */
 form label {
   display: block;
 }
-/* line 31, ../scss/index.scss */
+/* line 33, ../scss/index.scss */
 form select {
   margin-bottom: 2rem;
 }
 
-/* line 37, ../scss/index.scss */
+/* line 39, ../scss/index.scss */
 section {
   text-align: center;
 }
-/* line 40, ../scss/index.scss */
+/* line 42, ../scss/index.scss */
 section > div {
   display: inline-block;
   text-align: left;
@@ -48,12 +48,12 @@ section > div {
   background-color: rgba(255, 255, 255, 0.8);
   border: 0.2rem solid rgba(0, 0, 0, 0.1);
 }
-/* line 48, ../scss/index.scss */
+/* line 50, ../scss/index.scss */
 section > div strong,
 section > div span {
   vertical-align: center;
 }
-/* line 51, ../scss/index.scss */
+/* line 53, ../scss/index.scss */
 section > div strong {
   width: 2rem;
   text-align: center;
@@ -62,7 +62,7 @@ section > div strong {
   -webkit-border-radius: 0.5rem;
   border-radius: 0.5rem;
 }
-/* line 59, ../scss/index.scss */
+/* line 61, ../scss/index.scss */
 section ul {
   list-style: none;
   padding: 0;
